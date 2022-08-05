@@ -12,7 +12,11 @@ contract Bank{
         uint256 balance;
         address payable owner;
     }
+     Details[] public detailed;
     mapping (address => Details) private addressToDetails;
+    uint256 newBalance = addressToDetails[msg.sender].balance;
+   
+
 
     function register(string memory _name )public{
         addressToDetails[msg.sender] = Details(
@@ -22,8 +26,19 @@ contract Bank{
             payable(msg.sender)
 
         );
+        detailed.push(Details(
+            
+            _name,
+            0,
+            payable(msg.sender)
+            
+            ));
 
     }
+    function getDetails()public view returns(Details[] memory){
+        return detailed;
+    }
+    
     function checkDetails()public view checkOwner() returns(Details memory) {
         return addressToDetails[msg.sender];
     }
@@ -40,8 +55,8 @@ contract Bank{
         _;
     }
   
-    function deposit( uint256 _price) public  checkOwner(){
-        addressToDetails[msg.sender].balance+=_price;
+    receive() external payable  checkOwner() costs(0.001 ether){
+        addressToDetails[msg.sender].balance+=msg.value;
     }
 
 }
